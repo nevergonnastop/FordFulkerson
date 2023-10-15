@@ -1,0 +1,43 @@
+class Solution {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        ArrayList graph[] = new ArrayList [n];
+        int dist[] = new int[n];
+        int stops[] = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        Arrays.fill(stops, Integer.MAX_VALUE);
+            
+
+        
+        for(int i = 0; i< n; i++){
+            graph[i] = new ArrayList<int[]>();
+        }
+        
+        for(int arr[] : flights){
+            graph[arr[0]].add(new int[]{arr[1], arr[2]});
+        }
+        
+    
+        Queue<int[]> q = new PriorityQueue<int[]>((a,b) -> a[0] - b[0]); // (Cost, city, stops)
+        q.add(new int[]{0, src, -1});
+        dist[src] = 0;
+        while(!q.isEmpty()){
+            int []e = q.poll();
+            int cost = e[0], vtx = e[1], stop = e[2];
+
+            if(vtx == dst) return cost;
+            if(stop + 1 > k) continue;
+            ArrayList<int[]> al = graph[vtx];
+            for(int arr[] : al){
+                int u = arr[0], d = arr[1];
+                int nextdis = d + cost;
+                int nextstop = stop + 1;
+                if(nextdis < dist[u]){
+                    dist[u] = nextdis;
+                    // stops[u] = nextstop;
+                    q.add(new int[]{nextdis, u, nextstop});
+                }
+            }
+        }
+        return dist[dst] == Integer.MAX_VALUE?-1:dist[dst];
+    }
+}
